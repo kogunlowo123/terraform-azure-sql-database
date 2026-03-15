@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture - terraform-azure-sql-database</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b0c0b;color:#f5f2eb;font-family:'Courier New',monospace;line-height:1.7}
+a{color:#c8420a;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:1200px;margin:0 auto;padding:2rem}
+.badge{display:inline-block;background:#0078D4;color:#fff;padding:0.3rem 1rem;border-radius:4px;font-size:0.85rem;margin-bottom:1.5rem}
+h1{font-size:2.2rem;color:#c8420a;border-bottom:2px solid #c8420a;padding-bottom:0.5rem;margin-bottom:1.5rem}
+h2{font-size:1.5rem;color:#c8420a;margin:2rem 0 1rem;border-left:4px solid #c8420a;padding-left:0.75rem}
+h3{font-size:1.1rem;color:#f5f2eb;margin:1.2rem 0 0.5rem}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin:1rem 0}
+.card{background:#161816;border:1px solid #2a2d2a;border-radius:8px;padding:1.2rem;transition:border-color 0.2s}.card:hover{border-color:#c8420a}
+.card .num{font-size:2rem;color:#c8420a;font-weight:bold}
+.card .label{color:#a0a0a0;font-size:0.85rem}
+.card .value{color:#f5f2eb;font-size:1rem;margin-top:0.25rem}
+.arch-diagram{background:#161816;border:1px solid #2a2d2a;border-radius:8px;padding:2rem;margin:1rem 0;overflow-x:auto}
+.flow-row{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0.5rem;margin:0.75rem 0}
+.flow-box{background:#1e201e;border:2px solid #c8420a;border-radius:6px;padding:0.6rem 1.2rem;text-align:center;min-width:140px;font-size:0.85rem}
+.flow-box.accent{background:#c8420a;color:#fff;border-color:#c8420a}
+.flow-box.blue{border-color:#0078D4;background:#0a1628}
+.flow-box.green{border-color:#27AE60;background:#0a1e12}
+.flow-box.yellow{border-color:#F39C12;background:#1e1a0a}
+.flow-box.red{border-color:#E74856;background:#1e0a0e}
+.flow-arrow{color:#c8420a;font-size:1.5rem}
+.flow-arrow-down{text-align:center;color:#c8420a;font-size:1.5rem;margin:0.25rem 0}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.85rem}
+th{background:#1a1c1a;color:#c8420a;text-align:left;padding:0.6rem;border:1px solid #2a2d2a}
+td{padding:0.6rem;border:1px solid #2a2d2a;color:#f5f2eb}
+tr:nth-child(even){background:#131513}
+code{background:#1a1c1a;padding:0.15rem 0.4rem;border-radius:3px;font-size:0.85rem;color:#c8420a}
+pre{background:#1a1c1a;padding:1rem;border-radius:6px;overflow-x:auto;margin:0.5rem 0;font-size:0.82rem;color:#f5f2eb;border:1px solid #2a2d2a}
+.checklist{list-style:none;padding:0}.checklist li{padding:0.4rem 0;border-bottom:1px solid #1a1c1a}
+.checklist li::before{content:"[ ] ";color:#c8420a;font-weight:bold}
+.section{margin-bottom:2.5rem}
+footer{border-top:1px solid #2a2d2a;padding-top:1.5rem;margin-top:3rem;color:#666;font-size:0.8rem;text-align:center}
+</style>
+</head>
+<body>
+<div class="container">
+
+<span class="badge">Microsoft Azure</span>
+<h1>terraform-azure-sql-database</h1>
+
+<div class="section">
+<h2>Executive Summary</h2>
+<p>This Terraform module provisions a complete Azure SQL Database infrastructure including SQL Server, databases with flexible SKUs, elastic pools for resource sharing, failover groups for high availability, comprehensive security (auditing, threat detection, vulnerability assessment), network controls (firewall rules, VNet rules, private endpoints), Azure AD integration, and transparent data encryption with optional customer-managed keys. It supports the full lifecycle of enterprise relational database deployments on Azure.</p>
+</div>
+
+<div class="section">
+<h2>Overview</h2>
+<div class="card-grid">
+<div class="card"><div class="num">10</div><div class="label">Resource Types</div><div class="value">Server, DBs, Pools, Failover, FW, VNet, Audit, Alerts, VA, PE</div></div>
+<div class="card"><div class="num">HA</div><div class="label">High Availability</div><div class="value">Failover groups with auto/manual failover</div></div>
+<div class="card"><div class="num">TDE</div><div class="label">Encryption</div><div class="value">Transparent Data Encryption + CMK</div></div>
+<div class="card"><div class="num">17</div><div class="label">Input Variables</div><div class="value">Comprehensive configuration</div></div>
+<div class="card"><div class="num">11</div><div class="label">Outputs</div><div class="value">IDs, FQDNs, maps for all resources</div></div>
+<div class="card"><div class="num">AAD</div><div class="label">Identity</div><div class="value">Azure AD admin with AAD-only auth option</div></div>
+</div>
+</div>
+
+<div class="section">
+<h2>Architecture Diagram</h2>
+<div class="arch-diagram">
+<div class="flow-row">
+<div class="flow-box accent">Azure SQL Server</div>
+</div>
+<div class="flow-arrow-down">&#9660;</div>
+<div class="flow-row">
+<div class="flow-box blue">Databases</div>
+<div class="flow-box yellow">Elastic Pools</div>
+<div class="flow-box">Azure AD Admin</div>
+</div>
+<div class="flow-arrow-down">&#9660;</div>
+<div class="flow-row">
+<div class="flow-box red">Failover Groups</div>
+<div class="flow-arrow">&#9654;</div>
+<div class="flow-box red">Partner Server</div>
+</div>
+<div class="flow-arrow-down">&#9660;</div>
+<div class="flow-row">
+<div class="flow-box">Threat Detection</div>
+<div class="flow-box">Retention Policies</div>
+<div class="flow-box">Ledger</div>
+</div>
+<div class="flow-arrow-down">&#9660;</div>
+<div class="flow-row">
+<div class="flow-box green">Firewall Rules</div>
+<div class="flow-box green">VNet Rules</div>
+<div class="flow-box green">Private Endpoints</div>
+</div>
+<div class="flow-arrow-down">&#9660;</div>
+<div class="flow-row">
+<div class="flow-box">Auditing Policy</div>
+<div class="flow-box red">Security Alert Policy</div>
+<div class="flow-box red">Vulnerability Assessment</div>
+</div>
+</div>
+</div>
+
+<div class="section">
+<h2>Component Breakdown</h2>
+<h3>SQL Server</h3>
+<p>MSSQL Server (v12.0 or v2.0) with configurable admin credentials, TLS 1.2, connection policy (Default/Proxy/Redirect), public network access control, outbound network restrictions, managed identity, and TDE with optional Key Vault CMK.</p>
+<h3>Databases</h3>
+<p>Flexible databases with configurable SKU, collation, max size, zone redundancy, read scale, auto-pause (serverless), geo-backup, storage account type, ledger support, and TDE. Supports short-term and long-term retention policies plus per-database threat detection.</p>
+<h3>Elastic Pools</h3>
+<p>Resource pools with configurable SKU (name, tier, family, capacity), per-database min/max capacity, max size, zone redundancy, license type, and maintenance configuration.</p>
+<h3>Failover Groups</h3>
+<p>High availability with automatic or manual failover policies. Configurable grace period for automatic failover. Read-only endpoint failover support. Maps databases to partner servers.</p>
+<h3>Security Stack</h3>
+<p>Server-level auditing policy (storage + Log Analytics), security alert policy with email notifications, and vulnerability assessment with recurring scans. Database-level threat detection with configurable disabled alerts.</p>
+<h3>Network Security</h3>
+<p>Firewall rules for IP-based access, VNet service endpoint rules for subnet-based access, and private endpoints with DNS zone groups for fully private connectivity.</p>
+</div>
+
+<div class="section">
+<h2>Data Flow</h2>
+<ol style="padding-left:1.5rem">
+<li>Clients connect via FQDN, routed through connection policy (Default/Proxy/Redirect)</li>
+<li>Firewall rules, VNet rules, and private endpoints control network access</li>
+<li>Azure AD or SQL authentication validates identity</li>
+<li>Queries are routed to databases (standalone or in elastic pools)</li>
+<li>Failover groups provide automatic redirection to partner server on failure</li>
+<li>TDE encrypts data at rest with Microsoft-managed or customer-managed keys</li>
+<li>Auditing policy logs operations to storage and/or Log Analytics</li>
+<li>Threat detection monitors for SQL injection, anomalous access, and brute force</li>
+<li>Vulnerability assessment runs recurring scans and reports findings</li>
+</ol>
+</div>
+
+<div class="section">
+<h2>Security Controls</h2>
+<table>
+<tr><th>Control</th><th>Implementation</th></tr>
+<tr><td>Authentication</td><td>SQL auth + Azure AD admin with optional AAD-only mode</td></tr>
+<tr><td>Encryption at Rest</td><td>TDE with Microsoft-managed or CMK via Key Vault</td></tr>
+<tr><td>Encryption in Transit</td><td>TLS 1.2 minimum enforced</td></tr>
+<tr><td>Network Isolation</td><td>Firewall rules, VNet rules, private endpoints</td></tr>
+<tr><td>Threat Detection</td><td>Server and database-level security alert policies</td></tr>
+<tr><td>Auditing</td><td>Extended auditing to storage and Log Analytics</td></tr>
+<tr><td>Vulnerability Mgmt</td><td>Recurring vulnerability assessment scans</td></tr>
+<tr><td>Data Integrity</td><td>Ledger support for tamper-evident databases</td></tr>
+<tr><td>Managed Identity</td><td>SystemAssigned and UserAssigned identities</td></tr>
+<tr><td>High Availability</td><td>Failover groups with automatic failover and geo-replication</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>Industry Adaptation</h2>
+<div class="card-grid">
+<div class="card"><h3>Financial Services</h3><p>Enable ledger databases for tamper-proof audit trails. CMK encryption, private endpoints only, full auditing, failover groups with automatic failover, vulnerability assessment with email alerts.</p></div>
+<div class="card"><h3>Healthcare</h3><p>AAD-only authentication, TDE with CMK, 365-day audit retention, threat detection with admin email alerts, private endpoints with DNS zones, geo-backup enabled.</p></div>
+<div class="card"><h3>SaaS Platforms</h3><p>Elastic pools for multi-tenant database consolidation, per-database min/max capacity, auto-pause for serverless workloads, read replicas for reporting.</p></div>
+<div class="card"><h3>Government</h3><p>FedRAMP-aligned: CMK encryption, disabled public access, VNet rules, full auditing + vulnerability assessment, 730-day retention, zone-redundant databases.</p></div>
+</div>
+</div>
+
+<div class="section">
+<h2>Production Readiness Checklist</h2>
+<ul class="checklist">
+<li>Configure Azure AD administrator with AAD-only authentication</li>
+<li>Enable TDE with customer-managed keys in Key Vault</li>
+<li>Set minimum TLS version to 1.2</li>
+<li>Disable public network access, use private endpoints</li>
+<li>Configure firewall rules for necessary IP ranges only</li>
+<li>Set up failover groups for business-critical databases</li>
+<li>Enable server-level auditing with appropriate retention</li>
+<li>Configure security alert policy with admin email notifications</li>
+<li>Enable vulnerability assessment with recurring scans</li>
+<li>Configure short-term and long-term retention policies</li>
+<li>Set up elastic pools for multi-database workloads</li>
+<li>Apply resource tags for cost management</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Configuration Reference</h2>
+<h3>Required Variables</h3>
+<table>
+<tr><th>Variable</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>server_name</code></td><td>string</td><td>SQL Server name (1-63 chars, lowercase)</td></tr>
+<tr><td><code>resource_group_name</code></td><td>string</td><td>Target resource group</td></tr>
+<tr><td><code>location</code></td><td>string</td><td>Azure region</td></tr>
+</table>
+<h3>Key Optional Variables</h3>
+<table>
+<tr><th>Variable</th><th>Type</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>server_version</code></td><td>string</td><td>12.0</td><td>SQL Server version</td></tr>
+<tr><td><code>minimum_tls_version</code></td><td>string</td><td>1.2</td><td>Minimum TLS version</td></tr>
+<tr><td><code>public_network_access_enabled</code></td><td>bool</td><td>false</td><td>Public access toggle</td></tr>
+<tr><td><code>databases</code></td><td>map(object)</td><td>{}</td><td>Database configurations</td></tr>
+<tr><td><code>elastic_pools</code></td><td>map(object)</td><td>{}</td><td>Elastic pool configurations</td></tr>
+<tr><td><code>failover_groups</code></td><td>map(object)</td><td>{}</td><td>Failover group configurations</td></tr>
+<tr><td><code>auditing_policy</code></td><td>object</td><td>null</td><td>Server auditing policy</td></tr>
+<tr><td><code>security_alert_policy</code></td><td>object</td><td>null</td><td>Threat detection policy</td></tr>
+<tr><td><code>private_endpoints</code></td><td>map(object)</td><td>{}</td><td>Private endpoint configs</td></tr>
+</table>
+<h3>Key Outputs</h3>
+<table>
+<tr><th>Output</th><th>Description</th></tr>
+<tr><td><code>server_id</code></td><td>SQL Server ID</td></tr>
+<tr><td><code>server_fqdn</code></td><td>Fully qualified domain name</td></tr>
+<tr><td><code>database_ids</code></td><td>Map of database names to IDs</td></tr>
+<tr><td><code>elastic_pool_ids</code></td><td>Map of elastic pool names to IDs</td></tr>
+<tr><td><code>failover_group_ids</code></td><td>Map of failover group names to IDs</td></tr>
+<tr><td><code>private_endpoint_ids</code></td><td>Map of PE names to IDs</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>Deployment</h2>
+<pre>
+# Initialize Terraform
+terraform init
+
+# Preview changes
+terraform plan -out=tfplan
+
+# Apply configuration
+terraform apply tfplan
+</pre>
+<h3>Prerequisites</h3>
+<ul style="padding-left:1.5rem;margin-top:0.5rem">
+<li>Terraform >= 1.3.0</li>
+<li>AzureRM provider >= 3.80.0</li>
+<li>Existing Azure Resource Group</li>
+<li>For failover groups: partner SQL Server in a different region</li>
+<li>For CMK: Key Vault with appropriate access policies</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Links</h2>
+<ul style="padding-left:1.5rem">
+<li><a href="https://learn.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview">Azure SQL Database Overview</a></li>
+<li><a href="https://learn.microsoft.com/en-us/azure/azure-sql/database/failover-group-sql-db">Failover Groups</a></li>
+<li><a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mssql_server">Terraform azurerm_mssql_server</a></li>
+</ul>
+</div>
+
+<footer>
+<p>terraform-azure-sql-database &middot; Architecture Documentation &middot; Generated 2026-03-15</p>
+<p>Terraform Module for Microsoft Azure</p>
+</footer>
+
+</div>
+</body>
+</html>
