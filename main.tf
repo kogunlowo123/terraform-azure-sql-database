@@ -1,19 +1,15 @@
-###############################################################################
-# SQL Server
-###############################################################################
-
 resource "azurerm_mssql_server" "this" {
-  name                                 = var.server_name
-  resource_group_name                  = var.resource_group_name
-  location                             = var.location
-  version                              = var.server_version
-  administrator_login                  = var.administrator_login
-  administrator_login_password         = var.administrator_login_password
-  minimum_tls_version                  = var.minimum_tls_version
-  public_network_access_enabled        = var.public_network_access_enabled
-  outbound_network_restriction_enabled = var.outbound_network_restriction_enabled
-  connection_policy                    = var.connection_policy
-  primary_user_assigned_identity_id    = var.primary_user_assigned_identity_id
+  name                                         = var.server_name
+  resource_group_name                          = var.resource_group_name
+  location                                     = var.location
+  version                                      = var.server_version
+  administrator_login                          = var.administrator_login
+  administrator_login_password                 = var.administrator_login_password
+  minimum_tls_version                          = var.minimum_tls_version
+  public_network_access_enabled                = var.public_network_access_enabled
+  outbound_network_restriction_enabled         = var.outbound_network_restriction_enabled
+  connection_policy                            = var.connection_policy
+  primary_user_assigned_identity_id            = var.primary_user_assigned_identity_id
   transparent_data_encryption_key_vault_key_id = var.transparent_data_encryption_key_vault_key_id
 
   dynamic "azuread_administrator" {
@@ -34,12 +30,8 @@ resource "azurerm_mssql_server" "this" {
     }
   }
 
-  tags = local.merged_tags
+  tags = var.tags
 }
-
-###############################################################################
-# Elastic Pools
-###############################################################################
 
 resource "azurerm_mssql_elasticpool" "this" {
   for_each = var.elastic_pools
@@ -65,34 +57,30 @@ resource "azurerm_mssql_elasticpool" "this" {
     max_capacity = each.value.per_database_settings_max_capacity
   }
 
-  tags = local.merged_tags
+  tags = var.tags
 }
-
-###############################################################################
-# Databases
-###############################################################################
 
 resource "azurerm_mssql_database" "this" {
   for_each = var.databases
 
-  name                            = each.key
-  server_id                       = azurerm_mssql_server.this.id
-  collation                       = each.value.collation
-  license_type                    = each.value.elastic_pool_key == null ? each.value.license_type : null
-  sku_name                        = each.value.elastic_pool_key != null ? "ElasticPool" : each.value.sku_name
-  max_size_gb                     = each.value.max_size_gb
-  zone_redundant                  = each.value.zone_redundant
-  read_scale                      = each.value.read_scale
-  read_replica_count              = each.value.read_replica_count
-  auto_pause_delay_in_minutes     = each.value.auto_pause_delay_in_minutes
-  min_capacity                    = each.value.min_capacity
-  elastic_pool_id                 = each.value.elastic_pool_key != null ? azurerm_mssql_elasticpool.this[each.value.elastic_pool_key].id : null
-  create_mode                     = each.value.create_mode
-  creation_source_database_id     = each.value.creation_source_database_id
-  restore_point_in_time           = each.value.restore_point_in_time
-  geo_backup_enabled              = each.value.geo_backup_enabled
-  storage_account_type            = each.value.storage_account_type
-  ledger_enabled                  = each.value.ledger_enabled
+  name                                = each.key
+  server_id                           = azurerm_mssql_server.this.id
+  collation                           = each.value.collation
+  license_type                        = each.value.elastic_pool_key == null ? each.value.license_type : null
+  sku_name                            = each.value.elastic_pool_key != null ? "ElasticPool" : each.value.sku_name
+  max_size_gb                         = each.value.max_size_gb
+  zone_redundant                      = each.value.zone_redundant
+  read_scale                          = each.value.read_scale
+  read_replica_count                  = each.value.read_replica_count
+  auto_pause_delay_in_minutes         = each.value.auto_pause_delay_in_minutes
+  min_capacity                        = each.value.min_capacity
+  elastic_pool_id                     = each.value.elastic_pool_key != null ? azurerm_mssql_elasticpool.this[each.value.elastic_pool_key].id : null
+  create_mode                         = each.value.create_mode
+  creation_source_database_id         = each.value.creation_source_database_id
+  restore_point_in_time               = each.value.restore_point_in_time
+  geo_backup_enabled                  = each.value.geo_backup_enabled
+  storage_account_type                = each.value.storage_account_type
+  ledger_enabled                      = each.value.ledger_enabled
   transparent_data_encryption_enabled = each.value.transparent_data_encryption_enabled
 
   dynamic "short_term_retention_policy" {
@@ -126,19 +114,15 @@ resource "azurerm_mssql_database" "this" {
     }
   }
 
-  tags = local.merged_tags
+  tags = var.tags
 }
-
-###############################################################################
-# Failover Groups
-###############################################################################
 
 resource "azurerm_mssql_failover_group" "this" {
   for_each = var.failover_groups
 
   name      = each.key
   server_id = azurerm_mssql_server.this.id
-  databases = local.failover_group_databases[each.key]
+  databases = [for db_name in each.value.databases : azurerm_mssql_database.this[db_name].id]
 
   partner_server {
     id = each.value.partner_server_id
@@ -151,12 +135,8 @@ resource "azurerm_mssql_failover_group" "this" {
 
   readonly_endpoint_failover_policy_enabled = each.value.readonly_endpoint_failover_policy_enabled
 
-  tags = local.merged_tags
+  tags = var.tags
 }
-
-###############################################################################
-# Firewall Rules
-###############################################################################
 
 resource "azurerm_mssql_firewall_rule" "this" {
   for_each = var.firewall_rules
@@ -167,10 +147,6 @@ resource "azurerm_mssql_firewall_rule" "this" {
   end_ip_address   = each.value.end_ip_address
 }
 
-###############################################################################
-# VNet Rules
-###############################################################################
-
 resource "azurerm_mssql_virtual_network_rule" "this" {
   for_each = var.vnet_rules
 
@@ -179,10 +155,6 @@ resource "azurerm_mssql_virtual_network_rule" "this" {
   subnet_id                            = each.value.subnet_id
   ignore_missing_vnet_service_endpoint = each.value.ignore_missing_vnet_service_endpoint
 }
-
-###############################################################################
-# Server Auditing Policy
-###############################################################################
 
 resource "azurerm_mssql_server_extended_auditing_policy" "this" {
   count = var.auditing_policy != null ? 1 : 0
@@ -195,10 +167,6 @@ resource "azurerm_mssql_server_extended_auditing_policy" "this" {
   retention_in_days                       = var.auditing_policy.retention_in_days
   log_monitoring_enabled                  = var.auditing_policy.log_monitoring_enabled
 }
-
-###############################################################################
-# Security Alert Policy (Threat Detection)
-###############################################################################
 
 resource "azurerm_mssql_server_security_alert_policy" "this" {
   count = var.security_alert_policy != null ? 1 : 0
@@ -213,10 +181,6 @@ resource "azurerm_mssql_server_security_alert_policy" "this" {
   storage_account_access_key = var.security_alert_policy.storage_account_access_key
   storage_endpoint           = var.security_alert_policy.storage_endpoint
 }
-
-###############################################################################
-# Vulnerability Assessment
-###############################################################################
 
 resource "azurerm_mssql_server_vulnerability_assessment" "this" {
   count = var.vulnerability_assessment != null ? 1 : 0
@@ -235,10 +199,6 @@ resource "azurerm_mssql_server_vulnerability_assessment" "this" {
     }
   }
 }
-
-###############################################################################
-# Private Endpoints
-###############################################################################
 
 resource "azurerm_private_endpoint" "this" {
   for_each = var.private_endpoints
@@ -264,5 +224,5 @@ resource "azurerm_private_endpoint" "this" {
     }
   }
 
-  tags = local.merged_tags
+  tags = var.tags
 }

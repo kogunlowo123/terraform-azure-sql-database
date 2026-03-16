@@ -19,7 +19,7 @@ variable "location" {
 }
 
 variable "server_version" {
-  description = "The version of the SQL Server. Valid values are 2.0 (for v11 server) and 12.0 (for v12 server)."
+  description = "The version of the SQL Server (2.0 or 12.0)."
   type        = string
   default     = "12.0"
 
@@ -66,7 +66,7 @@ variable "outbound_network_restriction_enabled" {
 }
 
 variable "connection_policy" {
-  description = "The connection policy for the server. Valid values are Default, Proxy, and Redirect."
+  description = "The connection policy for the server (Default, Proxy, or Redirect)."
   type        = string
   default     = "Default"
 
@@ -119,36 +119,33 @@ variable "transparent_data_encryption_key_vault_key_id" {
 variable "databases" {
   description = "Map of databases to create on the SQL Server."
   type = map(object({
-    collation                   = optional(string, "SQL_Latin1_General_CP1_CI_AS")
-    license_type                = optional(string, "LicenseIncluded")
-    sku_name                    = optional(string, "S0")
-    max_size_gb                 = optional(number, 2)
-    zone_redundant              = optional(bool, false)
-    read_scale                  = optional(bool, false)
-    read_replica_count          = optional(number, 0)
-    auto_pause_delay_in_minutes = optional(number, -1)
-    min_capacity                = optional(number, null)
-    elastic_pool_key            = optional(string, null)
-    create_mode                 = optional(string, "Default")
-    creation_source_database_id = optional(string, null)
-    restore_point_in_time       = optional(string, null)
-    geo_backup_enabled          = optional(bool, true)
-    storage_account_type        = optional(string, "Geo")
-    ledger_enabled              = optional(bool, false)
+    collation                           = optional(string, "SQL_Latin1_General_CP1_CI_AS")
+    license_type                        = optional(string, "LicenseIncluded")
+    sku_name                            = optional(string, "S0")
+    max_size_gb                         = optional(number, 2)
+    zone_redundant                      = optional(bool, false)
+    read_scale                          = optional(bool, false)
+    read_replica_count                  = optional(number, 0)
+    auto_pause_delay_in_minutes         = optional(number, -1)
+    min_capacity                        = optional(number, null)
+    elastic_pool_key                    = optional(string, null)
+    create_mode                         = optional(string, "Default")
+    creation_source_database_id         = optional(string, null)
+    restore_point_in_time               = optional(string, null)
+    geo_backup_enabled                  = optional(bool, true)
+    storage_account_type                = optional(string, "Geo")
+    ledger_enabled                      = optional(bool, false)
     transparent_data_encryption_enabled = optional(bool, true)
-
     short_term_retention_policy = optional(object({
       retention_days           = number
       backup_interval_in_hours = optional(number, 12)
     }), null)
-
     long_term_retention_policy = optional(object({
       weekly_retention  = optional(string, null)
       monthly_retention = optional(string, null)
       yearly_retention  = optional(string, null)
       week_of_year      = optional(number, null)
     }), null)
-
     threat_detection_policy = optional(object({
       state                      = optional(string, "Enabled")
       disabled_alerts            = optional(list(string), [])
