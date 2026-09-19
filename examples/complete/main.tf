@@ -74,16 +74,16 @@ resource "azurerm_user_assigned_identity" "example" {
 module "sql_database" {
   source = "../../"
 
-  server_name                   = "sql-complete-example"
-  resource_group_name           = azurerm_resource_group.example.name
-  location                      = azurerm_resource_group.example.location
-  administrator_login           = "sqladmin"
-  administrator_login_password  = "P@ssw0rd1234!"
-  minimum_tls_version           = "1.2"
-  public_network_access_enabled = false
-  connection_policy             = "Redirect"
-  identity_type                 = "SystemAssigned, UserAssigned"
-  identity_ids                  = [azurerm_user_assigned_identity.example.id]
+  server_name                       = "sql-complete-example"
+  resource_group_name               = azurerm_resource_group.example.name
+  location                          = azurerm_resource_group.example.location
+  administrator_login               = "sqladmin"
+  administrator_login_password      = "P@ssw0rd1234!"
+  minimum_tls_version               = "1.2"
+  public_network_access_enabled     = false
+  connection_policy                 = "Redirect"
+  identity_type                     = "SystemAssigned, UserAssigned"
+  identity_ids                      = [azurerm_user_assigned_identity.example.id]
   primary_user_assigned_identity_id = azurerm_user_assigned_identity.example.id
 
   azuread_administrator = {
@@ -106,11 +106,11 @@ module "sql_database" {
 
   databases = {
     "app-primary" = {
-      sku_name           = "P1"
-      max_size_gb        = 50
-      zone_redundant     = true
-      read_scale         = true
-      geo_backup_enabled = true
+      sku_name             = "P1"
+      max_size_gb          = 50
+      zone_redundant       = true
+      read_scale           = true
+      geo_backup_enabled   = true
       storage_account_type = "Geo"
 
       short_term_retention_policy = {
