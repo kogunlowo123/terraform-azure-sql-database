@@ -104,13 +104,13 @@ resource "azurerm_mssql_database" "this" {
   dynamic "threat_detection_policy" {
     for_each = each.value.threat_detection_policy != null ? [each.value.threat_detection_policy] : []
     content {
-      state                      = threat_detection_policy.value.state
-      disabled_alerts            = threat_detection_policy.value.disabled_alerts
-      email_account_admins       = threat_detection_policy.value.email_account_admins
-      email_addresses            = threat_detection_policy.value.email_addresses
-      retention_days             = threat_detection_policy.value.retention_days
-      storage_account_access_key = threat_detection_policy.value.storage_account_access_key
-      storage_endpoint           = threat_detection_policy.value.storage_endpoint
+      state                        = threat_detection_policy.value.state
+      disabled_alerts              = threat_detection_policy.value.disabled_alerts
+      email_account_admins_enabled = threat_detection_policy.value.email_account_admins
+      email_addresses              = threat_detection_policy.value.email_addresses
+      retention_days               = threat_detection_policy.value.retention_days
+      storage_account_access_key   = threat_detection_policy.value.storage_account_access_key
+      storage_endpoint             = threat_detection_policy.value.storage_endpoint
     }
   }
 
@@ -161,7 +161,7 @@ resource "azurerm_mssql_server_extended_auditing_policy" "this" {
 
   server_id                               = azurerm_mssql_server.this.id
   enabled                                 = var.auditing_policy.enabled
-  storage_endpoint                        = var.auditing_policy.storage_endpoint
+  blob_storage_endpoint                   = var.auditing_policy.storage_endpoint
   storage_account_access_key              = var.auditing_policy.storage_account_access_key
   storage_account_access_key_is_secondary = var.auditing_policy.storage_account_access_key_is_secondary
   retention_in_days                       = var.auditing_policy.retention_in_days
@@ -171,15 +171,15 @@ resource "azurerm_mssql_server_extended_auditing_policy" "this" {
 resource "azurerm_mssql_server_security_alert_policy" "this" {
   count = var.security_alert_policy != null ? 1 : 0
 
-  resource_group_name        = var.resource_group_name
-  server_name                = azurerm_mssql_server.this.name
-  state                      = var.security_alert_policy.state
-  disabled_alerts            = var.security_alert_policy.disabled_alerts
-  email_account_admins       = var.security_alert_policy.email_account_admins
-  email_addresses            = var.security_alert_policy.email_addresses
-  retention_days             = var.security_alert_policy.retention_days
-  storage_account_access_key = var.security_alert_policy.storage_account_access_key
-  storage_endpoint           = var.security_alert_policy.storage_endpoint
+  resource_group_name          = var.resource_group_name
+  server_name                  = azurerm_mssql_server.this.name
+  state                        = var.security_alert_policy.state
+  disabled_alerts              = var.security_alert_policy.disabled_alerts
+  email_account_admins_enabled = var.security_alert_policy.email_account_admins
+  email_addresses              = var.security_alert_policy.email_addresses
+  retention_days               = var.security_alert_policy.retention_days
+  storage_account_access_key   = var.security_alert_policy.storage_account_access_key
+  storage_endpoint             = var.security_alert_policy.storage_endpoint
 }
 
 resource "azurerm_mssql_server_vulnerability_assessment" "this" {

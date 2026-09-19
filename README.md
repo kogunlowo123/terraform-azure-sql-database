@@ -88,7 +88,7 @@ module "sql_database" {
 | Name | Version |
 |------|---------|
 | terraform | >= 1.3.0 |
-| azurerm | >= 3.80.0 |
+| azurerm | >= 5.0.0, < 6.0.0 |
 
 ## Inputs
 

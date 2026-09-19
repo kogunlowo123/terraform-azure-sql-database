@@ -33,7 +33,10 @@ resource "azurerm_subnet" "services" {
   resource_group_name  = azurerm_resource_group.example.name
   virtual_network_name = azurerm_virtual_network.example.name
   address_prefixes     = ["10.0.2.0/24"]
-  service_endpoints    = ["Microsoft.Sql"]
+
+  service_endpoint {
+    service = "Microsoft.Sql"
+  }
 }
 
 resource "azurerm_private_dns_zone" "sql" {
@@ -42,10 +45,9 @@ resource "azurerm_private_dns_zone" "sql" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "sql" {
-  name                  = "sql-dns-link"
-  resource_group_name   = azurerm_resource_group.example.name
-  private_dns_zone_name = azurerm_private_dns_zone.sql.name
-  virtual_network_id    = azurerm_virtual_network.example.id
+  name                = "sql-dns-link"
+  private_dns_zone_id = azurerm_private_dns_zone.sql.id
+  virtual_network_id  = azurerm_virtual_network.example.id
 }
 
 resource "azurerm_storage_account" "audit" {
