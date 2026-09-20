@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 410" width="900" height="410" role="img" aria-label="terraform-azure-sql-database architecture">
+<title>terraform-azure-sql-database architecture</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#64748b"/></marker></defs>
+<rect width="900" height="410" fill="#ffffff"/>
+<text x="24" y="34" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="600" fill="#0f172a">terraform-azure-sql-database</text>
+<text x="24" y="56" font-family="Segoe UI,Arial,sans-serif" font-size="13" fill="#475569">Terraform module. Providers: azurerm</text>
+<rect x="24" y="80" width="260" height="300" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="38" y="104" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Inputs (25 variables)</text>
+<text x="38" y="126" font-family="Consolas,monospace" font-size="12" fill="#334155">server_name</text>
+<text x="38" y="144" font-family="Consolas,monospace" font-size="12" fill="#334155">resource_group_name</text>
+<text x="38" y="162" font-family="Consolas,monospace" font-size="12" fill="#334155">location</text>
+<text x="38" y="180" font-family="Consolas,monospace" font-size="12" fill="#334155">server_version</text>
+<text x="38" y="198" font-family="Consolas,monospace" font-size="12" fill="#334155">administrator_login</text>
+<text x="38" y="216" font-family="Consolas,monospace" font-size="12" fill="#334155">administrator_login_password</text>
+<text x="38" y="234" font-family="Consolas,monospace" font-size="12" fill="#334155">minimum_tls_version</text>
+<text x="38" y="252" font-family="Consolas,monospace" font-size="12" fill="#334155">public_network_access_enabled</text>
+<text x="38" y="270" font-family="Consolas,monospace" font-size="12" fill="#334155">outbound_network_restriction_ena</text>
+<text x="38" y="288" font-family="Consolas,monospace" font-size="12" fill="#334155">connection_policy</text>
+<text x="38" y="306" font-family="Consolas,monospace" font-size="12" fill="#334155">azuread_administrator</text>
+<text x="38" y="324" font-family="Consolas,monospace" font-size="12" fill="#334155">identity_type</text>
+<text x="38" y="342" font-family="Consolas,monospace" font-size="12" fill="#334155">+ 13 more</text>
+<rect x="320" y="80" width="300" height="300" rx="8" fill="#f0fdf4" stroke="#86efac"/>
+<text x="334" y="104" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Resources (10)</text>
+<text x="334" y="126" font-family="Consolas,monospace" font-size="12" fill="#334155">azurerm_mssql_database</text>
+<text x="334" y="144" font-family="Consolas,monospace" font-size="12" fill="#334155">azurerm_mssql_elasticpool</text>
+<text x="334" y="162" font-family="Consolas,monospace" font-size="12" fill="#334155">azurerm_mssql_failover_group</text>
+<text x="334" y="180" font-family="Consolas,monospace" font-size="12" fill="#334155">azurerm_mssql_firewall_rule</text>
+<text x="334" y="198" font-family="Consolas,monospace" font-size="12" fill="#334155">azurerm_mssql_server</text>
+<text x="334" y="216" font-family="Consolas,monospace" font-size="12" fill="#334155">azurerm_mssql_server_extended_auditing</text>
+<text x="334" y="234" font-family="Consolas,monospace" font-size="12" fill="#334155">azurerm_mssql_server_security_alert_po</text>
+<text x="334" y="252" font-family="Consolas,monospace" font-size="12" fill="#334155">azurerm_mssql_server_vulnerability_ass</text>
+<text x="334" y="270" font-family="Consolas,monospace" font-size="12" fill="#334155">azurerm_mssql_virtual_network_rule</text>
+<text x="334" y="288" font-family="Consolas,monospace" font-size="12" fill="#334155">azurerm_private_endpoint</text>
+<rect x="656" y="80" width="220" height="300" rx="8" fill="#fefce8" stroke="#fde047"/>
+<text x="670" y="104" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Outputs (13)</text>
+<text x="670" y="126" font-family="Consolas,monospace" font-size="12" fill="#334155">server_id</text>
+<text x="670" y="144" font-family="Consolas,monospace" font-size="12" fill="#334155">server_name</text>
+<text x="670" y="162" font-family="Consolas,monospace" font-size="12" fill="#334155">server_fqdn</text>
+<text x="670" y="180" font-family="Consolas,monospace" font-size="12" fill="#334155">server_identity</text>
+<text x="670" y="198" font-family="Consolas,monospace" font-size="12" fill="#334155">database_ids</text>
+<text x="670" y="216" font-family="Consolas,monospace" font-size="12" fill="#334155">database_names</text>
+<text x="670" y="234" font-family="Consolas,monospace" font-size="12" fill="#334155">elastic_pool_ids</text>
+<text x="670" y="252" font-family="Consolas,monospace" font-size="12" fill="#334155">failover_group_ids</text>
+<text x="670" y="270" font-family="Consolas,monospace" font-size="12" fill="#334155">failover_group_partner_serv</text>
+<text x="670" y="288" font-family="Consolas,monospace" font-size="12" fill="#334155">firewall_rule_ids</text>
+<text x="670" y="306" font-family="Consolas,monospace" font-size="12" fill="#334155">vnet_rule_ids</text>
+<text x="670" y="324" font-family="Consolas,monospace" font-size="12" fill="#334155">private_endpoint_ids</text>
+<text x="670" y="342" font-family="Consolas,monospace" font-size="12" fill="#334155">+ 1 more</text>
+<line x1="284" y1="230" x2="318" y2="230" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<line x1="620" y1="230" x2="654" y2="230" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+</svg>
